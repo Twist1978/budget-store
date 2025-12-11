@@ -1,59 +1,269 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Budget Backend (Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Backend-API für die Budget-App.  
+Dieses Projekt stellt eine REST-/JSON-API bereit, über die die Mobile-App Ausgaben, Kategorien, Budgets und (später) Beleg-Fotos anlegt, ausliest und synchronisiert.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Inhalt
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. [Projektziele](#projektziele)
+2. [Funktionen](#funktionen)
+3. [Technischer Überblick](#technischer-überblick)
+4. [Voraussetzungen](#voraussetzungen)
+5. [Lokale Entwicklung](#lokale-entwicklung)
+6. [Konfiguration (.env)](#konfiguration-env)
+7. [Datenbank & Migrations](#datenbank--migrations)
+8. [API-Übersicht](#api-übersicht)
+9. [Tests](#tests)
+10. [Deployment (Raspberry Pi)](#deployment-raspberry-pi)
+11. [Roadmap](#roadmap)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Projektziele
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Dieses Backend soll:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Ausgaben aus der Mobile-App entgegennehmen und in einer relationalen Datenbank speichern.
+- Kategorien, Budgets und ggf. Konten/Wallets verwalten.
+- Eine Basis für spätere KI-Funktionen bieten:
+    - Beleg-Fotos empfangen
+    - Belegtext via OCR extrahieren
+    - Belegdaten via LLM interpretieren und automatisch Felder befüllen.
 
-## Laravel Sponsors
+- Das Backend wird nicht nur als reine API, sondern später auch eine ansicht haben. Wie genau das aussehen wird steht noch nicht fest. Entweder als eine React anwendung, oder einfach nur eine Web-App.
+    - Hier wird es dann auch ein Web-Admin (z. B. für Kategorien/Budgets) geben.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## Funktionen
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### MVP (aktueller Stand / erste Version)
 
-## Contributing
+- Anlegen von Ausgaben (Betrag, Datum, Kategorie, Notiz, optional Foto-Referenz)
+- Auslesen von Ausgaben (Liste, Detail)
+- Kategorienverwaltung (CRUD)
+- Einfache Authentifizierung (z. B. Token- oder Session-basiert)
+- Felder von `Expense` (`id`, `vendor` `amount`, `date`, `category`, `debitAccount`)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Geplante Funktionen
 
-## Code of Conduct
+- Upload von Beleg-Fotos von der App zum Backend
+- Anbindung eines LLM (z. B. OpenAI, lokales Modell) zur automatischen Belegerkennung
+- Auswertungen/Reports (Monatsübersicht, Kategorie-Statistiken, Budget-Warnungen)
+- KI-Services soll synchron (bei API-Call) laufen
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Technischer Überblick
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Framework:** Laravel (Version: 12)
+- **Programmiersprache:** PHP (empfohlen: PHP 8.3+)
+- **Datenbank:** MySQL
+- **Auth:** z. B. Laravel Sanctum oder Laravel Passport für Token-Auth - wird später entschieden
+- **Deployment-Ziel:** Raspberry Pi (Linux, Nginx oder Apache)
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Voraussetzungen
+
+- PHP (mind 8.3+)
+- Composer
+- Datenbank (MySQL)
+- Node.js & npm (für Laravel Mix/Vite, falls nötig)
+- Git
+- Jenkins auf dem entwicklungsrechner zum späteren deployment auf dem rasp.
+
+Optional (für Raspberry Pi):
+
+- Apache
+
+---
+
+## Lokale Entwicklung
+
+### 1. Repository klonen
+
+```
+git clone <REPO-URL> budget-backend
+cd budget-backend
+```
+### 2. Abhängigkeiten installieren
+
+```
+composer install
+```
+
+Für die Prod-Umgebung:
+```
+composer install --no-dev --optimize-autoloader
+```
+
+Falls Frontend-Assets oder Laravel Breeze/Jetstream genutzt werden:
+
+```
+npm install
+npm run dev    # oder: npm run build
+```
+
+### 3. .env erstellen
+
+```
+cp .env.example .env
+php artisan key:generate
+```
+Anschließend DB_*, APP_URL etc. in .env anpassen, siehe Konfiguration.
+
+### 4. Migrations ausführen
+
+```
+php artisan migrate
+```
+
+Optional mit Seedern:
+
+```
+php artisan migrate --seed
+```
+
+### 5. Lokalen Server starten
+
+```
+php artisan serve
+```
+
+Standard: http://127.0.0.1:8000
+
+## Konfiguration (.env)
+
+Wichtige .env-Variablen:
+```
+APP_NAME="Budget Backend"
+APP_ENV=local
+APP_KEY=base64:<>
+APP_DEBUG=true
+APP_URL=http://localhost
+
+LOG_CHANNEL=stack
+
+DB_CONNECTION=mysql
+DB_HOST=<DB_HOST>
+DB_PORT=3306
+DB_DATABASE=<DB_DATABASE>
+DB_USERNAME=<DB_USERNAME>
+DB_PASSWORD=<DB_PASSWORD>
+
+# Auth / Tokens (Beispiel)
+SANCTUM_STATEFUL_DOMAINS=localhost
+SESSION_DOMAIN=localhost
+
+# KI / OCR (geplant)
+OCR_PROVIDER=
+OCR_API_KEY=
+LLM_PROVIDER=
+LLM_API_KEY=
+```
+
+## Datenbank & Migrations
+
+Geplante Kern-Tabellen (Beispiele):
+
+- users – Nutzerkonten (optional, falls Multi-User)
+- categories – Kategorien (z. B. Lebensmittel, Miete, Freizeit)
+- expenses – Ausgaben (mit Foreign-Key auf categories und ggf. users)
+
+Beispiel: Migration für expenses (vereinfachtes Schema):
+```
+Schema::create('expenses', function (Blueprint $table) {
+    $table->id();
+    $table->unsignedBigInteger('user_id')->nullable();
+    $table->unsignedBigInteger('category_id')->nullable();
+    $table->decimal('amount', 10, 2);
+    $table->string('currency', 3)->default('EUR');
+    $table->date('date');
+    $table->timestamps();
+});
+```
+
+## API-Übersicht
+Die Mobile-App kommuniziert über eine JSON-API.
+
+Beispiele (nur als Entwurf):
+- POST /api/login – Login (falls erforderlich)
+- GET /api/expenses – Liste aller Ausgaben
+- POST /api/expenses – Neue Ausgabe anlegen
+- GET /api/expenses/{id} – Details einer Ausgabe
+- PUT /api/expenses/{id} – Ausgabe bearbeiten
+- DELETE /api/expenses/{id} – Ausgabe löschen
+- GET /api/categories – Liste der Kategorien
+- POST /api/categories – Kategorie anlegen
+- ...
+
+
+Später:
+- POST /api/receipts – Upload eines Belegs (Bilddatei)
+
+### Scribe
+
+Die Api wird durch Scribe dokumentiert.
+
+Einmal für das Setup:
+```
+vendor:publish --tag=scribe-config
+```
+
+Zum Bauen der Dokumentation (auch bei jeder Änderung):
+```
+php artisan scribe:generate
+```
+
+## Tests
+Laravel bietet Unterstützung für:
+- Feature-Tests (HTTP-Endpunkte)
+- Unit-Tests (Services, Models, Helper)
+
+Beispiele:
+```
+php artisan test
+```
+
+oder gezielt:
+```
+php artisan test --filter=ExpenseTest
+```
+
+## Deployment (Raspberry Pi)
+
+Geplanter grober Ablauf:
+1. Code auf den Raspberry Pi deployen (git pull, rsync, o. Ä.).
+2. Abhängigkeiten installieren:
+   ```
+   composer install --no-dev --optimize-autoloader
+   ```
+3. .env für Produktions-Setup anlegen (APP_ENV=production, APP_DEBUG=false, DB-Zugänge).
+4. Migrations ausführen:
+   ```
+   php artisan migrate --force
+   ```
+5. Webserver konfigurieren:
+   - Apache als Reverse Proxy zu php-fpm
+   - APP_URL auf die Pi-URL setzen (z. B. http://budget-pi.local)
+6. Optional: Queue-Worker einrichten (Supervisor / systemd) für KI-Jobs.
+
+## Roadmap
+
+### Kurzfristig:
+- Basis-Migrations (expenses, categories, ggf. users)
+- Basis-API für Ausgaben & Kategorien
+- Verbindung zur Mobile-App herstellen (erste End-to-End-Tests)
+- Authentifizierungsstrategie festlegen und implementieren
+
+### Mittelfristig:
+- Beleg-Upload-Endpoint implementieren
+- LLM-Integration für Belegauswertung (z. B. via Queue-Job)
+
+### Langfristig:
+- Statistiken/Reports
+- Budget-Alerts/Notifications
+- Web-UI für Admin/Übersichten
