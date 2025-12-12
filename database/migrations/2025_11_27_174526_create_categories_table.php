@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');              // z. B. "Lebensmittel"
-            $table->string('color', 20)->nullable(); // z. B. "#00ff00" oder "green"
+            $table->string('name'); // z. B. "Lebensmittel"
+
             $table->timestamps();
         });
     }

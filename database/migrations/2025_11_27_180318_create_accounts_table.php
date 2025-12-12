@@ -10,8 +10,10 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // z.B. "Girokonto", "Bargeld", "Kreditkarte"
-            $table->string('color', 20)->nullable(); // optional visuelle Farbe
+            $table->string('name'); // Accountname e.g. "Girokonto", "Bargeld", "Kreditkarte"
+            $table->string('iban'); // IBAN of the account
+            $table->string('bic'); // BIC of the account
+            $table->integer('overdraft'); // the overdraft of the account
             $table->timestamps();
         });
     }

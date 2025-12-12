@@ -23,7 +23,6 @@ class CategoryController extends Controller
     public function store(Request $request): JsonResponse {
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
-            'color' => 'nullable|string|max:20',
         ]);
 
         $category = Category::create($validated);
@@ -38,7 +37,6 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name'  => 'sometimes|string|max:255',
-            'color' => 'sometimes|string|max:20',
         ]);
 
         $category->update($validated);
