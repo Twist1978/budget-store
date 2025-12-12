@@ -23,7 +23,9 @@ class AccountController extends Controller
     public function store(Request $request): JsonResponse {
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
-            'color' => 'nullable|string|max:20',
+            'iban' => 'required|string|max:27',
+            'bic' => 'required|string|max:11',
+            'overdraft' => 'required|integer',
         ]);
 
         $account = Account::create($validated);
@@ -36,8 +38,10 @@ class AccountController extends Controller
      */
     public function update(Request $request, Account $account): JsonResponse {
         $validated = $request->validate([
-            'name'  => 'sometimes|string|max:255',
-            'color' => 'sometimes|string|max:20',
+            'name'  => 'required|string|max:255',
+            'iban' => 'required|string|max:27',
+            'bic' => 'required|string|max:11',
+            'overdraft' => 'required|integer',
         ]);
 
         $account->update($validated);

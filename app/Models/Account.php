@@ -9,7 +9,9 @@ class Account extends Model
 {
     protected $fillable = [
         'name',
-        'color',
+        'iban',
+        'bic',
+        'overdraft',
     ];
 
     public function expenses(): HasMany
