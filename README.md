@@ -1,7 +1,10 @@
-# Budget Backend (Laravel)
+# Haushaltsetat-Planung – Backend
 
-Backend-API für die Budget-App.  
-Dieses Projekt stellt eine REST-/JSON-API bereit, über die die Mobile-App Ausgaben, Kategorien, Budgets und (später) Beleg-Fotos anlegt, ausliest und synchronisiert.
+Backend-API für das Projekt „Haushaltsetat-Planung“.
+
+Dieses Repository ist Teil einer End-to-End-Arbeitsprobe bestehend aus:
+- React Native App (Datenerfassung): https://github.com/Twist1978/budget-app
+- Laravel API + MySQL (dieses Repository)
 
 ---
 
@@ -58,10 +61,10 @@ Dieses Backend soll:
 
 ## Technischer Überblick
 
-- **Framework:** Laravel (Version: 12)
-- **Programmiersprache:** PHP (empfohlen: PHP 8.3+)
+- **Framework:** Laravel (aktuelle Version)
+- **Programmiersprache:** PHP 8.3+
 - **Datenbank:** MySQL
-- **Auth:** z. B. Laravel Sanctum oder Laravel Passport für Token-Auth - wird später entschieden
+- **Auth:** z. B. Laravel Sanctum
 - **Deployment-Ziel:** Raspberry Pi (Linux, Nginx oder Apache)
 
 ---
@@ -186,11 +189,18 @@ Schema::create('expenses', function (Blueprint $table) {
 });
 ```
 
-## API-Übersicht
-Die Mobile-App kommuniziert über eine JSON-API.
+## API-Enpoints
+Die Mobile-App kommuniziert über eine REST-basierte JSON-API.
 
-Beispiele (nur als Entwurf):
-- POST /api/login – Login (falls erforderlich)
+**Base URL:** `/api`
+
+**Auth**
+- Authorization: Bearer <token>
+
+**Health**
+- GET /health – Der Health-Endpunkt wird für Monitoring und einfache Deploy-Checks verwendet.
+
+** API **
 - GET /api/expenses – Liste aller Ausgaben
 - POST /api/expenses – Neue Ausgabe anlegen
 - GET /api/expenses/{id} – Details einer Ausgabe
@@ -198,8 +208,6 @@ Beispiele (nur als Entwurf):
 - DELETE /api/expenses/{id} – Ausgabe löschen
 - GET /api/categories – Liste der Kategorien
 - POST /api/categories – Kategorie anlegen
-- ...
-
 
 Später:
 - POST /api/receipts – Upload eines Belegs (Bilddatei)
